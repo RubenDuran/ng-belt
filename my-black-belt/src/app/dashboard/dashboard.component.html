@@ -1,0 +1,38 @@
+<div class="container">
+    <header>
+        <ul>
+            <li>Bucket List</li>
+            <li><a [routerLink]="['/../dashboard']">Home</a></li>
+            <li><a href="#">Logout</a></li>
+        </ul>
+    </header>
+    <h2>Welcome, {{user.name}}!</h2>
+    <form (submit)="addListItem()">
+        <input type="text" name="title" [(ngModel)]="newList.title" placeholder="Title">
+        <input type="text" name="description" [(ngModel)]="newList.description" placeholder="description">
+        <select name="otherUser" [(ngModel)]="newList.otherUser">
+            <option *ngFor='let user of users'    value="{{user._id}}">{{user.name}}</option>
+        </select>
+        <input type="submit" value="Add to List">
+
+    </form>
+    <br>
+
+    <div class="listItems">
+        <h4>Before I die I want to...</h4>
+        <ul>
+            <li *ngFor='let l of list'><input type="checkbox" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>
+        </ul>
+
+    </div>
+    <br>
+
+    <div class="usersList">
+        <h4>List of other users(Click to view profile):</h4>
+        <ul>
+            <li *ngFor='let user of users'><a [routerLink]="['./../user/',user._id]">{{user.name}}</a></li>
+        </ul>
+    </div>
+
+
+</div>
