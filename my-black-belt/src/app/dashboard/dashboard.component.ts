@@ -10,6 +10,7 @@ import "rxjs";
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+errors: string[] = [];
   list: object[] = [];
   users: object[] = [];
   user: object = {};
@@ -72,15 +73,33 @@ export class DashboardComponent implements OnInit {
     this._listService.addListItem(listItem)
       .then(data => {
         console.log('back in components addlistitem THEN', data);
+        var arr = [];
+        if (data.errors) {
+          for (var key in data.errors) {
+            arr.push(data.errors[key].message);
+            this.errors = arr;
+        }}
 
 
         let bucketItem = { status: false, _user: this.user['_id'], _listItem: data._id };
         this._listService.addToBucket(bucketItem)
           .then(data => {
             console.log('back in components addtoBUCKET THEN', data);
+            var arr = [];
+            if (data.errors) {
+              for (var key in data.errors) {
+                arr.push(data.errors[key].message);
+                this.errors = arr;
+            }}
             //grabbing my bucket again
             this._listService.getMyBucket()
               .then(data => {
+                  var arr = [];
+                  if (data.errors) {
+                    for (var key in data.errors) {
+                      arr.push(data.errors[key].message);
+                      this.errors = arr;
+                  }}
                 console.log('in init - getting my bucket', data);
                 this.list = data;
                 console.log('this.list =', this.list);

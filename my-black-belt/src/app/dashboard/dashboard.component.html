@@ -7,9 +7,14 @@
         </ul>
     </header>
     <h2>Welcome, {{user.name}}!</h2>
+
+    <ul *ngIf='errors'>
+      <li *ngFor="let error of errors">{{error}}</li>
+    </ul>
+
     <form (submit)="addListItem()">
-        <input type="text" name="title" [(ngModel)]="newList.title" placeholder="Title">
-        <input type="text" name="description" [(ngModel)]="newList.description" placeholder="description">
+        <input type="text" name="title" [(ngModel)]="newList.title" placeholder="Title" required="true">
+        <input type="text" name="description" [(ngModel)]="newList.description" placeholder="description" required="true">
         <select name="otherUser" [(ngModel)]="newList.otherUser">
             <option *ngFor='let user of users'    value="{{user._id}}">{{user.name}}</option>
         </select>
@@ -21,7 +26,11 @@
     <div class="listItems">
         <h4>Before I die I want to...</h4>
         <ul>
-            <li *ngFor='let l of list'><input type="checkbox" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>
+            <li *ngFor='let l of list'>
+                <input *ngIf="l.status == true " type="checkbox" checked="checked" (click)="clicked(l._id)">
+                <input *ngIf="l.status == false" type="checkbox" (click)="clicked(l._id)">
+                {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt | date }}
+            </li>
         </ul>
 
     </div>

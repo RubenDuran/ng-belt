@@ -1,27 +1,27 @@
 <div class="container">
-    <header>
-        <ul>
-            <li>Bucket List</li>
-            <li><a [routerLink]="['/../dashboard']">Home</a></li>
-            <li><a href="#">Logout</a></li>
-        </ul>
-    </header>
+  <header>
+    <ul>
+      <li>Bucket List</li>
+      <li><a [routerLink]="['/../dashboard']">Home</a></li>
+      <li><a href="#">Logout</a></li>
+    </ul>
+  </header>
 
-    <div class="bod">
-        <h2>{{anotherUser.name}}'s Bucket List</h2>
+  <div class="bod">
+    <h2>{{anotherUser.name}}'s Bucket List</h2>
 
-        <h4>Done</h4>
-        <ul>
-            <li *ngFor='let l of doneList'><input type="checkbox" checked="checked" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>
-        </ul>
+    <h4>Done</h4>
+    <ul>
+      <li *ngFor='let l of doneList'><input type="checkbox" checked="checked" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}} - {{l._listItem.description}} - {{l._listItem.createdAt | date }}</li>
+    </ul>
 
 
 
-        <h4>Pending</h4>
-        <ul>
-            <li *ngFor='let l of pendList'><input type="checkbox" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>
-        </ul>
+    <h4>Pending</h4>
+    <ul>
+      <li *ngFor='let l of pendList'><input type="checkbox" (click)="clicked(l._id)"> {{l._listItem.creator}} | {{l._listItem.title}} - {{l._listItem.description}} - {{l._listItem.createdAt | date }}</li>
+    </ul>
 
-    </div>
+  </div>
 
 </div>

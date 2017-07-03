@@ -203,7 +203,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <header>\n        <ul>\n            <li>Bucket List</li>\n            <li><a [routerLink]=\"['/../dashboard']\">Home</a></li>\n            <li><a href=\"#\">Logout</a></li>\n        </ul>\n    </header>\n    <h2>Welcome, {{user.name}}!</h2>\n    <form (submit)=\"addListItem()\">\n        <input type=\"text\" name=\"title\" [(ngModel)]=\"newList.title\" placeholder=\"Title\">\n        <input type=\"text\" name=\"description\" [(ngModel)]=\"newList.description\" placeholder=\"description\">\n        <select name=\"otherUser\" [(ngModel)]=\"newList.otherUser\">\n            <option *ngFor='let user of users'    value=\"{{user._id}}\">{{user.name}}</option>\n        </select>\n        <input type=\"submit\" value=\"Add to List\">\n\n    </form>\n    <br>\n\n    <div class=\"listItems\">\n        <h4>Before I die I want to...</h4>\n        <ul>\n            <li *ngFor='let l of list'><input type=\"checkbox\" (click)=\"clicked(l._id)\"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>\n        </ul>\n\n    </div>\n    <br>\n\n    <div class=\"usersList\">\n        <h4>List of other users(Click to view profile):</h4>\n        <ul>\n            <li *ngFor='let user of users'><a [routerLink]=\"['./../user/',user._id]\">{{user.name}}</a></li>\n        </ul>\n    </div>\n\n\n</div>\n"
+module.exports = "<div class=\"container\">\n    <header>\n        <ul>\n            <li>Bucket List</li>\n            <li><a [routerLink]=\"['/../dashboard']\">Home</a></li>\n            <li><a href=\"#\">Logout</a></li>\n        </ul>\n    </header>\n    <h2>Welcome, {{user.name}}!</h2>\n\n    <ul *ngIf='errors'>\n      <li *ngFor=\"let error of errors\">{{error}}</li>\n    </ul>\n\n    <form (submit)=\"addListItem()\">\n        <input type=\"text\" name=\"title\" [(ngModel)]=\"newList.title\" placeholder=\"Title\" required=\"true\">\n        <input type=\"text\" name=\"description\" [(ngModel)]=\"newList.description\" placeholder=\"description\" required=\"true\">\n        <select name=\"otherUser\" [(ngModel)]=\"newList.otherUser\">\n            <option *ngFor='let user of users'    value=\"{{user._id}}\">{{user.name}}</option>\n        </select>\n        <input type=\"submit\" value=\"Add to List\">\n\n    </form>\n    <br>\n\n    <div class=\"listItems\">\n        <h4>Before I die I want to...</h4>\n        <ul>\n            <li *ngFor='let l of list'>\n                <input *ngIf=\"l.status == true \" type=\"checkbox\" checked=\"checked\" (click)=\"clicked(l._id)\">\n                <input *ngIf=\"l.status == false\" type=\"checkbox\" (click)=\"clicked(l._id)\">\n                {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt | date }}\n            </li>\n        </ul>\n\n    </div>\n    <br>\n\n    <div class=\"usersList\">\n        <h4>List of other users(Click to view profile):</h4>\n        <ul>\n            <li *ngFor='let user of users'><a [routerLink]=\"['./../user/',user._id]\">{{user.name}}</a></li>\n        </ul>\n    </div>\n\n\n</div>\n"
 
 /***/ }),
 
@@ -235,6 +235,7 @@ var DashboardComponent = (function () {
         this._listService = _listService;
         this._router = _router;
         this._route = _route;
+        this.errors = [];
         this.list = [];
         this.users = [];
         this.user = {};
@@ -284,13 +285,34 @@ var DashboardComponent = (function () {
         this._listService.addListItem(listItem)
             .then(function (data) {
             console.log('back in components addlistitem THEN', data);
+            var arr = [];
+            if (data.errors) {
+                for (var key in data.errors) {
+                    arr.push(data.errors[key].message);
+                    _this.errors = arr;
+                }
+            }
             var bucketItem = { status: false, _user: _this.user['_id'], _listItem: data._id };
             _this._listService.addToBucket(bucketItem)
                 .then(function (data) {
                 console.log('back in components addtoBUCKET THEN', data);
+                var arr = [];
+                if (data.errors) {
+                    for (var key in data.errors) {
+                        arr.push(data.errors[key].message);
+                        _this.errors = arr;
+                    }
+                }
                 //grabbing my bucket again
                 _this._listService.getMyBucket()
                     .then(function (data) {
+                    var arr = [];
+                    if (data.errors) {
+                        for (var key in data.errors) {
+                            arr.push(data.errors[key].message);
+                            _this.errors = arr;
+                        }
+                    }
                     console.log('in init - getting my bucket', data);
                     _this.list = data;
                     console.log('this.list =', _this.list);
@@ -548,7 +570,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/user/user.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n    <header>\n        <ul>\n            <li>Bucket List</li>\n            <li><a [routerLink]=\"['/../dashboard']\">Home</a></li>\n            <li><a href=\"#\">Logout</a></li>\n        </ul>\n    </header>\n\n    <div class=\"bod\">\n        <h2>{{anotherUser.name}}'s Bucket List</h2>\n\n        <h4>Done</h4>\n        <ul>\n            <li *ngFor='let l of doneList'><input type=\"checkbox\" checked=\"checked\" (click)=\"clicked(l._id)\"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>\n        </ul>\n\n\n\n        <h4>Pending</h4>\n        <ul>\n            <li *ngFor='let l of pendList'><input type=\"checkbox\" (click)=\"clicked(l._id)\"> {{l._listItem.creator}} | {{l._listItem.title}}  - {{l._listItem.description}}  - {{l._listItem.createdAt}}</li>\n        </ul>\n\n    </div>\n\n</div>\n"
+module.exports = "<div class=\"container\">\n  <header>\n    <ul>\n      <li>Bucket List</li>\n      <li><a [routerLink]=\"['/../dashboard']\">Home</a></li>\n      <li><a href=\"#\">Logout</a></li>\n    </ul>\n  </header>\n\n  <div class=\"bod\">\n    <h2>{{anotherUser.name}}'s Bucket List</h2>\n\n    <h4>Done</h4>\n    <ul>\n      <li *ngFor='let l of doneList'><input type=\"checkbox\" checked=\"checked\" (click)=\"clicked(l._id)\"> {{l._listItem.creator}} | {{l._listItem.title}} - {{l._listItem.description}} - {{l._listItem.createdAt | date }}</li>\n    </ul>\n\n\n\n    <h4>Pending</h4>\n    <ul>\n      <li *ngFor='let l of pendList'><input type=\"checkbox\" (click)=\"clicked(l._id)\"> {{l._listItem.creator}} | {{l._listItem.title}} - {{l._listItem.description}} - {{l._listItem.createdAt | date }}</li>\n    </ul>\n\n  </div>\n\n</div>\n"
 
 /***/ }),
 
@@ -583,6 +605,7 @@ var UserComponent = (function () {
         this._route = _route;
         this.userId = '';
         this.anotherUser = {};
+        this.loggedUser = {};
         this.list = [];
         this.doneList = [];
         this.pendList = [];
@@ -620,38 +643,54 @@ var UserComponent = (function () {
             .catch(function (err) {
             console.log(err, 'errrrrrrrrrrr ');
         });
+        this._listService.getUser()
+            .then(function (data) {
+            console.log('in init - getting the user', data);
+            _this.loggedUser = data;
+            console.log('this logged user =', _this.loggedUser);
+        })
+            .catch(function (err) {
+            _this._router.navigate(['questions']);
+        });
     };
     UserComponent.prototype.clicked = function (bucketID) {
         var _this = this;
-        console.log('in clicked -', bucketID);
-        this.doneList = [];
-        this.pendList = [];
-        this._listService.changeStatus({ id: bucketID })
-            .then(function (data) {
-            console.log('back in then after click', data);
-            _this._listService.getUserBucket({ _user: _this.userId })
+        console.log('the user id info', this.userId);
+        console.log('the other user info ', this.anotherUser['_id']);
+        if (this.loggedUser['_id'] == this.anotherUser['_id']) {
+            console.log('in clicked -', bucketID);
+            this.doneList = [];
+            this.pendList = [];
+            this._listService.changeStatus({ id: bucketID })
                 .then(function (data) {
-                console.log('in init - getting my bucket', data);
-                _this.list = data;
-                console.log('this.list =', _this.list);
-                for (var _i = 0, _a = _this.list; _i < _a.length; _i++) {
-                    var i = _a[_i];
-                    if (i['status']) {
-                        _this.doneList.push(i);
+                console.log('back in then after click', data);
+                _this._listService.getUserBucket({ _user: _this.userId })
+                    .then(function (data) {
+                    console.log('in init - getting my bucket', data);
+                    _this.list = data;
+                    console.log('this.list =', _this.list);
+                    for (var _i = 0, _a = _this.list; _i < _a.length; _i++) {
+                        var i = _a[_i];
+                        if (i['status']) {
+                            _this.doneList.push(i);
+                        }
+                        else {
+                            _this.pendList.push(i);
+                        }
                     }
-                    else {
-                        _this.pendList.push(i);
-                    }
-                }
+                })
+                    .catch(function (err) {
+                    console.log('no current bucket items for user');
+                });
             })
                 .catch(function (err) {
                 console.log('no current bucket items for user');
             });
-        })
-            .catch(function (err) {
-            console.log('no current bucket items for user');
-        });
-    };
+        }
+        else {
+            console.log('not the user');
+        }
+    }; // end of clicked function
     return UserComponent;
 }());
 UserComponent = __decorate([
